@@ -1,6 +1,5 @@
 import streamlit as st
 import matplotlib.pyplot as plt
-import numpy as np
 import datetime
 
 # Fungsi Konversi Waktu
@@ -11,14 +10,9 @@ def konversi_ke_menit(waktu):
     except:
         return None
 
-def konversi_ke_waktu(menit):
-    jam = menit // 60
-    sisa_menit = menit % 60
-    return f"{jam:02d}.{sisa_menit:02d}"
-
 # Fungsi untuk Menyusun Jadwal Kereta
 def jadwal_kereta(waktu):
-    waktu.sort(key=lambda x: x[1])  # Urutkan berdasarkan waktu tiba
+    waktu.sort(key=lambda x: x[1])
     hasil = []
     waktu_terakhir = 0
     for kereta in waktu:
@@ -30,7 +24,6 @@ def jadwal_kereta(waktu):
 # Sidebar Layout
 st.sidebar.image("Img/unikom.png", width=150)
 st.sidebar.image("Img/kelompok3.png", width=250)
-
 selected_date = st.sidebar.date_input("Tanggal", datetime.date.today())
 
 # Judul Aplikasi
@@ -47,9 +40,7 @@ waktu = []
 warning_rute = False
 for i in range(n):
     st.subheader(f"Kereta {i + 1}")
-    
     col1, col2, col3 = st.columns(3)
-    
     with col1:
         mulai_jam = st.text_input(f"Jam Berangkat Kereta {i + 1} (HH.MM)", key=f"mulai_{i}")
     with col2:
@@ -61,30 +52,19 @@ for i in range(n):
         start = konversi_ke_menit(mulai_jam)
         end = konversi_ke_menit(selesai_jam)
         if start is not None and end is not None:
-            for k in waktu:
-                if k[2] == rute and not (end <= k[0] or start >= k[1]):
-                    warning_rute = True
             waktu.append((start, end, rute, i + 1))
         else:
             st.error(f"Format waktu salah untuk Kereta {i + 1}! Gunakan format HH.MM")
-
-if warning_rute:
-    st.warning("⚠️ Ada jadwal yang mengambil rute yang sama dalam waktu yang tumpang tindih!")
 
 if st.button("🚄 Tampilkan Jadwal"): 
     if waktu:
         jadwal = jadwal_kereta(waktu)
         st.subheader("📅 Jadwal Kereta yang Dipilih:")
         for i, kereta in enumerate(jadwal):
-            mulai = konversi_ke_waktu(kereta[0])
-            selesai = konversi_ke_waktu(kereta[1])
-            st.write(f"**Kereta {kereta[3]} (Rute {kereta[2]})**: Berangkat **{mulai}**, Tiba **{selesai}**")
+            st.write(f"**Kereta {kereta[3]} (Rute {kereta[2]})**: Berangkat **{kereta[0]} menit**, Tiba **{kereta[1]} menit**")
         
         tercepat = min(jadwal, key=lambda x: x[1] - x[0])
-        mulai = konversi_ke_waktu(tercepat[0])
-        selesai = konversi_ke_waktu(tercepat[1])
-        durasi = tercepat[1] - tercepat[0]
-        st.success(f"🔥 Kereta tercepat adalah **Kereta {tercepat[3]} (Rute {tercepat[2]})**: Berangkat **{mulai}**, Tiba **{selesai}**, dengan durasi **{durasi} menit**.")
+        st.success(f"🔥 Kereta tercepat adalah **Kereta {tercepat[3]} (Rute {tercepat[2]})**: Berangkat **{tercepat[0]} menit**, Tiba **{tercepat[1]} menit**, dengan durasi **{tercepat[1] - tercepat[0]} menit**.")
         
         # Diagram Titik
         st.subheader("📊 Diagram Titik Jadwal Kereta")
@@ -93,13 +73,15 @@ if st.button("🚄 Tampilkan Jadwal"):
         kedatangan = [kereta[1] for kereta in waktu]
         
         fig, ax = plt.subplots(figsize=(8, 5))
-        
         ax.scatter(labels, keberangkatan, color='blue', label="Keberangkatan", s=100)
         ax.scatter(labels, kedatangan, color='red', label="Kedatangan", s=100)
         
         for i in range(len(labels)):
             ax.vlines(x=labels[i], ymin=keberangkatan[i], ymax=kedatangan[i], colors='black', linestyles='dotted')
         
+        y_min = min(keberangkatan) - 10  # Tambahkan margin kecil agar grafik terlihat rapi
+        y_max = max(kedatangan) + 10  # Tambahkan margin kecil
+        ax.set_ylim(y_min, y_max)
         ax.set_ylabel("Waktu (Menit)")
         ax.set_title("Jadwal Keberangkatan dan Kedatangan Kereta")
         ax.legend()
