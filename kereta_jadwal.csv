@@ -1,0 +1,9 @@
+Kereta,Stasiun_Asal,Stasiun_Tujuan,Keberangkatan,Kedatangan,Rute
+KA Argo Parahyangan,Bandung,Jakarta,05.00,08.00,A
+KA Lokal Cibatu,Bandung,Cimahi,06.30,06.50,B
+KA Lokal Padalarang,Bandung,Padalarang,07.15,07.45,C
+KA Serayu,Bandung,Kroya,08.30,16.00,A
+KA Lokal Bandung Raya,Padalarang,Cimahi,09.00,09.20,B
+KA Argo Parahyangan,Cimahi,Jakarta,10.30,13.30,A
+KA Serayu,Cimahi,Banjar,12.15,19.45,C
+KA Lokal Padalarang,Cimahi,Padalarang,13.00,13.30,B
